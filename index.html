@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOOMSAKE Update</title>
+    <!-- Use the Inter font from Google Fonts for a modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN for sleek, utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles to enhance the visual appeal */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevent scrollbars from the particle canvas */
+        }
+        
+        /* Keyframes for the fade-in animation of each section */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Apply the fade-in animation to the main container */
+        .animated-section {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        /* Position the canvas for the particle background */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Place behind other content */
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen p-4 sm:p-8 relative">
+
+    <!-- Particle background canvas -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Main container for the entire progress tracker -->
+    <div class="w-full max-w-4xl p-6 sm:p-8 bg-slate-800 rounded-2xl shadow-2xl space-y-8 md:space-y-12 z-10 animated-section">
+        <!-- Header section -->
+        <header class="text-center">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-2 tracking-tight">DOOMSAKE - Update Progress</h1>
+            <p class="text-lg sm:text-xl text-gray-400">Progress: In-Dev Release</p>
+        </header>
+
+        <!-- Grid layout for the four progress sections -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
+
+            <!-- Section 1: Gameplay Mechanics -->
+            <div class="relative p-6 bg-slate-700 rounded-xl shadow-xl">
+                <div class="flex flex-col space-y-3">
+                    <h2 class="text-2xl font-bold text-teal-300">Maps</h2>
+                    <!-- The progress bar container -->
+                    <div class="w-full h-4 bg-gray-500 rounded-full overflow-hidden shadow-inner">
+                        <div id="gameplay-progress" class="h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%; background: linear-gradient(90deg, #667eea, #764ba2);"></div>
+                    </div>
+                    <!-- Tooltip for the percentage -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900 text-white text-sm font-bold px-3 py-1 rounded-full shadow-lg">
+                        100%
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Visuals & Art -->
+            <div class="relative p-6 bg-slate-700 rounded-xl shadow-xl">
+                <div class="flex flex-col space-y-3">
+                    <h2 class="text-2xl font-bold text-violet-300">Systems</h2>
+                    <div class="w-full h-4 bg-gray-500 rounded-full overflow-hidden shadow-inner">
+                        <div id="visuals-progress" class="h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%; background: linear-gradient(90deg, #a779ed, #ec349b);"></div>
+                    </div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900 text-white text-sm font-bold px-3 py-1 rounded-full shadow-lg">
+                        100%
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Sound & Music -->
+            <div class="relative p-6 bg-slate-700 rounded-xl shadow-xl">
+                <div class="flex flex-col space-y-3">
+                    <h2 class="text-2xl font-bold text-yellow-300">Characters</h2>
+                    <div class="w-full h-4 bg-gray-500 rounded-full overflow-hidden shadow-inner">
+                        <div id="sound-progress" class="h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%; background: linear-gradient(90deg, #f5d447, #f78d12);"></div>
+                    </div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900 text-white text-sm font-bold px-3 py-1 rounded-full shadow-lg">
+                        100%
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Level Design -->
+            <div class="relative p-6 bg-slate-700 rounded-xl shadow-xl">
+                <div class="flex flex-col space-y-3">
+                    <h2 class="text-2xl font-bold text-rose-300">Interface</h2>
+                    <div class="w-full h-4 bg-gray-500 rounded-full overflow-hidden shadow-inner">
+                        <div id="level-progress" class="h-full rounded-full transition-all duration-1000 ease-out" style="width: 0%; background: linear-gradient(90deg, #f0547b, #ff7e79);"></div>
+                    </div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900 text-white text-sm font-bold px-3 py-1 rounded-full shadow-lg">
+                        100%
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Copyright footer -->
+        <footer class="text-center mt-12">
+            <p class="text-sm text-gray-500">&copy; 2025 Prince Studio</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate the progress bars on page load
+            const progressBars = [
+                { id: 'gameplay-progress', progress: 85 },
+                { id: 'visuals-progress', progress: 60 },
+                { id: 'sound-progress', progress: 35 },
+                { id: 'level-progress', progress: 95 }
+            ];
+
+            // Loop through each progress bar and set the final width
+            progressBars.forEach(item => {
+                const bar = document.getElementById(item.id);
+                if (bar) {
+                    bar.style.width = `${item.progress}%`;
+                }
+            });
+
+            // --- Particle Animation Script ---
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to the full window size
+            let width = window.innerWidth;
+            let height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+
+            // Handle window resizing
+            window.addEventListener('resize', () => {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+            });
+
+            // Define the particle class
+            class Particle {
+                constructor() {
+                    // Random position within the canvas
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    // Random size
+                    this.size = Math.random() * 2 + 1;
+                    // Random velocity
+                    this.velocity = {
+                        x: (Math.random() - 0.5) * 0.5,
+                        y: (Math.random() - 0.5) * 0.5
+                    };
+                    // Starting opacity
+                    this.opacity = 0.5;
+                }
+
+                // Method to update particle position
+                update() {
+                    // Update position based on velocity
+                    this.x += this.velocity.x;
+                    this.y += this.velocity.y;
+
+                    // Make particles loop around the screen
+                    if (this.x > width) this.x = 0;
+                    if (this.x < 0) this.x = width;
+                    if (this.y > height) this.y = 0;
+                    if (this.y < 0) this.y = height;
+                }
+
+                // Method to draw the particle
+                draw() {
+                    ctx.fillStyle = `rgba(100, 116, 139, ${this.opacity})`; /* A subtle gray color */
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Create an array of particles
+            const particles = [];
+            const particleCount = 100;
+
+            // Populate the particles array
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+
+            // Animation loop
+            function animate() {
+                // Clear the canvas on each frame
+                ctx.clearRect(0, 0, width, height);
+
+                // Update and draw each particle
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+
+                // Request the next animation frame
+                requestAnimationFrame(animate);
+            }
+
+            // Start the animation
+            animate();
+        });
+    </script>
+</body>
+</html>
